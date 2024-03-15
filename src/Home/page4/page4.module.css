@@ -117,7 +117,9 @@ table {
 	background-image: linear-gradient(to right, #FB527B , #FEE03B);
 }
 
-
+.user_images {
+	margin-right: 5px;
+}
 .user_date{
 	display: grid;
 	justify-content: center;

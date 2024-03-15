@@ -83,6 +83,18 @@ const Page4 = () => {
     });
   };
 
+  const copyLinkToClipboard = () => {
+    navigator.clipboard.writeText('t.me/spbneformal_app_bot')
+        .then(() => {
+          // Успешное копирование
+          alert('Скопировано');
+        })
+        .catch(err => {
+          // Обработка ошибки
+          console.error('Не удалось скопировать ссылку: ', err);
+        });
+  };
+
 
 
   console.log(renderCards)
@@ -146,7 +158,7 @@ const Page4 = () => {
             <br /> отправляй эту пригласительную ссылку 👇
           </p>
           <p id={cl.hrefTG}>t.me/spbneformal_app_bot</p>
-          <button className={cl.but}>СКОПИРОВАТЬ ССЫЛКУ</button>
+          <button onClick={copyLinkToClipboard} className={cl.but}>СКОПИРОВАТЬ ССЫЛКУ</button>
         </section>
 
         <section className={cl.homeBlock3}></section>
