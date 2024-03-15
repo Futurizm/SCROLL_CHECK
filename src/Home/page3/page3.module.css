@@ -26,6 +26,7 @@ body{
   border-radius: 100%;
   display: grid;
   place-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .slider {
@@ -49,6 +50,7 @@ body{
   width: 45px;
   height: 45px;
   border-radius: 100%;
+  backdrop-filter: blur(10px);
 }
 
 .left {

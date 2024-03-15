@@ -9,6 +9,8 @@ import {resetButton, setButtonPressed, setButtons} from '../../features/buttonSl
 import useFetch from '../../components/hooks/useFetch.js';
 import Loader from "../../components/UI/Loader/Loader.jsx";
 import axios from "axios";
+import back from "./img/back.svg"
+import forward from "./img/forward.svg"
 
 const Page3 = () => {
   const { search } = useLocation();
@@ -150,6 +152,13 @@ const Page3 = () => {
     }
   }, [data, loading, error, categoryId, postId]);
 
+  useEffect(() => {
+    sessionStorage.removeItem('currentSlide');
+  }, [postId]);
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [postId]);
+
   return (
       <div className={cl.container}>
         {loading ? (
@@ -168,7 +177,7 @@ const Page3 = () => {
                   </div>
                 </div>
                 <button className={`${cl.slide_btn} ${cl.left}`} onClick={() => handleBackClick(-1)}>
-                  &#10094;
+                  <img src={back} alt=""/>
                 </button>
 
                 <div className={cl.slides}>
@@ -177,7 +186,7 @@ const Page3 = () => {
                   ))}
                 </div>
                 <button className={`${cl.slide_btn} ${cl.right}`} onClick={() => handleButtonClick(1)}>
-                  &#10095;
+                  <img src={forward} alt=""/>
                 </button>
                 <div className={cl.slide_circles}>
                   {images.map((_, index) => (
@@ -198,29 +207,51 @@ const Page3 = () => {
                             <div className={`${cl.bg} ${cl.first}`}>
                               <p>{post?.attributes?.category?.data?.attributes?.title}</p>
                             </div>
-                            <div className={cl.bg}>{post?.attributes?.subcategories?.data?.attributes?.title || "Ресторан"}</div>
-                            <div className={`${cl.bg} ${cl.thirtd}`}>{post?.attributes?.subsubcategory?.data?.attributes?.title || "pet-friendly"}</div>
+                            {post?.attributes?.subcategory?.data?.attributes?.title && (
+                                <div className={`${cl.bg} `}>
+                                  {post.attributes.subcategory.data.attributes.title}
+                                </div>
+                            )}
+                            {post?.attributes?.subsubcategory?.data?.attributes?.title && (
+                                <div className={`${cl.bg} ${cl.third}`}>
+                                  {post.attributes.subsubcategory.data.attributes.title}
+                                </div>
+                            )}
                           </div>
                           <h1 className={cl.title}>{post?.attributes?.title}</h1>
-                          <div className={cl.text}>
-                            {post?.attributes?.content}
-                          </div>
-                          <div className={cl.time}>
-                            <p className={cl.work_time}>Часы работы</p>
-                            <p className={cl.day}>{post?.attributes?.time}</p>
-                          </div>
-                          <div className={cl.more}>
-                            <p className={cl.work_time}>Дополнительно</p>
-                            <p className={cl.silka}>
-                              <a className={cl.a} href={post?.attributes?.additionalInfo}>
-                                {post?.attributes?.additionalInfo}
-                              </a>
-                            </p>
-                          </div>
-                          <div className={cl.adres}>
-                            <p className={cl.work_time}>Адрес</p>
-                            <p className={cl.day}>     {post?.attributes?.address}</p>
-                          </div>
+                          {post?.attributes?.content && (
+                              <div className={cl.text}>
+                                <p>{post.attributes.content}</p>
+                              </div>
+                          )}
+                          {post?.attributes?.time && (
+                              <div className={cl.time}>
+                                <div>
+                                  <p className={cl.work_time}>Часы работы</p>
+                                  <p className={cl.day}>{post.attributes.time}</p>
+                                </div>
+                              </div>
+                          )}
+                          {post?.attributes?.additionalInfo && (
+                              <div className={cl.more}>
+                                <div>
+                                  <p className={cl.work_time}>Дополнительно</p>
+                                  <p className={cl.silka}>
+                                    <a className={cl.a} href={post.attributes.additionalInfo}>
+                                      {post.attributes.additionalInfo}
+                                    </a>
+                                  </p>
+                                </div>
+                              </div>
+                          )}
+                          {post?.attributes?.address && (
+                              <div className={cl.adres}>
+                                <div>
+                                  <p className={cl.work_time}>Адрес</p>
+                                  <p className={cl.day}>{post.attributes.address}</p>
+                                </div>
+                              </div>
+                          )}
                           <div className={cl.btn}>
                             <p className={cl.btn_btn}>ПОКАЗАТЬ НА КАРТЕ</p>
                           </div>
@@ -239,7 +270,7 @@ const Page3 = () => {
                       .map((post) => (
                           <div className={`${cl.card}`} key={post.id}>
                             <div className={cl.image__card}>
-                              <Link to={`/previewPage/${post.id}?categoryId=${categoryId}`}>
+                              <Link to={`/page2/previewPage/${post.id}?categoryId=${categoryId}`}>
                                 <img className={cl.asd}
                                      src={`https://places-test-api.danya.tech${post.attributes.images.data[0].attributes.url}`}
                                      alt=""/>
