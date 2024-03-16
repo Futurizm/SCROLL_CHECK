@@ -96,6 +96,8 @@ const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
         }
     }, [data]);
 
+    console.log(data)
+
 
     return (
         <div className={`${cl.food__bottom} ${cl._container}`}>
@@ -121,7 +123,7 @@ const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
                                         ? post?.attributes?.subsubcategory?.data?.attributes?.title
                                         : post?.attributes?.subcategory?.data?.attributes?.title
                                             ? post?.attributes?.subcategory?.data?.attributes?.title
-                                            : post?.attributes?.category?.data?.attributes?.title
+                                            : data?.attributes?.title
                                     }
                                 </h2>
                                 <p className={`${cl.food__position}`}>{post.attributes.title}</p>
