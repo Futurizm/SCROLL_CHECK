@@ -48,7 +48,7 @@ const Page4 = () => {
 
   const [fetching, isDataLoading, dataError] = useFetch(async () => {
     const response = await axios.get(
-        "https://places-test-api.danya.tech/api/getUser?uid=1295257412"
+        `https://places-test-api.danya.tech/api/getUser?uid=${window.Telegram.WebApp.initDataUnsafe.user.id}`
     );
     setData(response.data || {});
     return response;
