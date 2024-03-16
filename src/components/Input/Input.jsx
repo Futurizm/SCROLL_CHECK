@@ -81,7 +81,7 @@ const Input = () => {
         populate: "*",
         "pagination[pageSize]": pageSize,
         "pagination[page]": page,
-        "filters[title][$containsi]": searchQuery,
+        "filters[title][$contains]": searchQuery,
       });
       const fullUrl = `${apiUrl}?${queryParams.toString()}`;
 
@@ -127,7 +127,7 @@ const Input = () => {
       const queryParams = new URLSearchParams({
         "sort[0]": "createdAt:desc",
         populate: "*",
-        "filters[title][$containsi]": searchQuery,
+        "filters[title][$contains]": searchQuery,
         "pagination[pageSize]": pageSize,
         "pagination[page]": 1,
       });

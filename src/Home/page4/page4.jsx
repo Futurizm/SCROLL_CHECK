@@ -25,7 +25,7 @@ const Page4 = () => {
     try {
       // Send a request to the API to toggle the like status
       const response = await axios.get(
-          `https://places-test-api.danya.tech/api/like?uid=${window.Telegram.WebApp.initDataUnsafe.user.id}&postId=${postId}`
+          `https://places-test-api.danya.tech/api/like?uid=${window?.Telegram?.WebApp?.initDataUnsafe?.user?.id}&postId=${postId}`
       );
 
 
@@ -48,7 +48,7 @@ const Page4 = () => {
 
   const [fetching, isDataLoading, dataError] = useFetch(async () => {
     const response = await axios.get(
-        `https://places-test-api.danya.tech/api/getUser?uid=${window.Telegram.WebApp.initDataUnsafe.user.id}`
+        `https://places-test-api.danya.tech/api/getUser?uid=${window?.Telegram?.WebApp?.initDataUnsafe?.user?.id}`
     );
     setData(response.data || {});
     return response;
@@ -119,11 +119,13 @@ const Page4 = () => {
           </div>
         </main>
 
+        {data && data.user?.liked?.length > 0 && (
         <section className={cl.saved}>
-          <div className={cl.texxt_title}>
-            <h2>СОХРАНЕНИЯ</h2>
-            <span>({data.user?.liked?.length})</span>
-          </div>
+              <div className={cl.texxt_title}>
+                <h2>СОХРАНЕНИЯ</h2>
+                <span>({data.user?.liked?.length})</span>
+              </div>
+
           <div className={cl.list_saved}>
             {renderCards.map((like, index) => (
                 <div key={index} className={cl.block_saved}>
@@ -149,6 +151,7 @@ const Page4 = () => {
               </button>
           )}
         </section>
+        )}
         {/* <Posts updateLikedItems={updateLikedItems} /> */}
         <section className={cl.invite}>
           <img src={PiterTwo} alt="" />
