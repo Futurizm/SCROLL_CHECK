@@ -30,7 +30,11 @@ const Places = ({ selectedSubcategory, activeCategory, onSubcategorySelect }) =>
     }, [activeCategory]);
 
     const dispatch = useDispatch();
+    console.log(selectedSubcategoryId)
+    if (!selectedSubcategoryId){
+        dispatch(setSelectedSubcategory(null));
 
+    }
     const handleButtonClick = (subcategory, index) => {
         const currentSelectedButtons = { ...selectedButtons };
         setSelectedSubcategoryId(subcategory);
@@ -44,7 +48,6 @@ const Places = ({ selectedSubcategory, activeCategory, onSubcategorySelect }) =>
             // В противном случае делаем активной
             currentSelectedButtons[activeCategory] = index;
             dispatch(setSelectedSubcategory(subcategory));
-            localStorage.setItem('selectedSubcategory', JSON.stringify(subcategory));
         }
 
         setSelectedButtons(currentSelectedButtons);
@@ -82,7 +85,6 @@ const Places = ({ selectedSubcategory, activeCategory, onSubcategorySelect }) =>
             <MyLine />
             {selectedButtons[activeCategory] !== null && (
                 <SubPlaces
-                    selectedSubcategory={selectedSubcategoryId}
                     classname={cl.sintol}
                     activeCategory={activeCategory}
                     subcategoryId={selectedSubcategoryId}

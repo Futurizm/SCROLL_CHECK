@@ -5,7 +5,7 @@ import cl from './SubPlaces.module.css';
 import MySelectedButton from '../UI/MySelectedButton/MySelectedButton.jsx';
 import { useFetch } from '../../../../components/hooks/useFetchB.js';
 import axios from 'axios';
-import { setSelectedSubcategory, clearSelectedSubcategory } from '../../../../actions.js';
+import {setSelectedSubcategory, clearSelectedSubcategory, setSelectedSubsubcategory} from '../../../../actions.js';
 
 // ... (ваш импорт)
 // SubPlaces.jsx
@@ -32,12 +32,10 @@ const SubPlaces = ({ subcategoryId, activeCategory }) => {
     }, [fetching]);
 
     const handleButtonClick = useCallback((subcategory, index) => {
-        dispatch(setSelectedSubcategory(subcategory));
         setSelectedButton(index);
     }, [dispatch]);
 
     const subsubcategories = data?.data?.attributes?.subsubcategories?.data;
-    console.log(data)
     useEffect(() => {
         setSelectedButton(null);
     }, [subcategoryId, activeCategory, dispatch]);

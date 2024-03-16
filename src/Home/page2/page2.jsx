@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import arrowLeft from './img/header/arrow-left.svg';
 import home from './img/header/home.svg';
 import tool from './img/slider/tool.svg';
@@ -9,36 +9,29 @@ import FilterPage from '../filterPage/Filter.jsx';
 import SortedPosts from '../../components/SortedPosts.jsx';
 import cl from './page2.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import {setCategoryTitle} from '../../actions.js';
+import {setCategoryTitle, setCategoryTitled, setSelectedSubcategory} from '../../actions.js';
 import Loader from '../../components/UI/Loader/Loader.jsx';
 
 const InfoPage = () => {
-
-
-
-  const dispatch = useDispatch()
-
+  const { categoryId } = useParams();
+  const dispatch = useDispatch();
   const { activeCategoryId } = useParams();
   const [prevCategories, setPrevCategories] = useState([]);
   const [categoryTitles, setCategoryTitles] = useState({});
   const buttonRef = useRef(null);
+
+
+  console.log("CategoryId " + categoryId)
+
   useEffect(() => {
-    // Check if the button reference exists and if it does, simulate a click
     if (buttonRef.current) {
       buttonRef.current.click();
     }
   }, [buttonRef]);
   useEffect(() => {
-    // Добавьте здесь логику загрузки данных для категории
-    // Вы можете использовать categoryId для запроса данных
-    // например, с помощью fetch или другого метода
-    // Обновите компонент после загрузки данных
     console.log('categoryId:', activeCategoryId);
   }, [activeCategoryId]);
-  useEffect(() => {
-    // Add your logic for loading category data here
-    console.log('categoryId:', activeCategoryId);
-  }, [activeCategoryId]);
+
 
   const handleGoBack = () => {
     if (prevCategories.length > 0) {
@@ -47,15 +40,15 @@ const InfoPage = () => {
       setPrevCategories([...prevCategories]);
       const path = `/page2/${lastCategory}`;
       window.history.pushState(null, '', path);
-      // Добавьте небольшую задержку перед скроллингом
       setTimeout(() => {
         scrollToActiveCategory();
-      }, 100); // Измените значение задержки по вашему усмотрению
+      }, 100);
     } else {
       const path = '/';
       window.history.pushState(null, '', path);
     }
   };
+
   const scrollToActiveCategory = () => {
     const tabsBox = document.querySelector(`.${cl.tabs_box}`);
     const activeTab = document.querySelector(`.${cl.tab}.${cl.active}`);
@@ -71,34 +64,36 @@ const InfoPage = () => {
 
   const [categoryPosts, setCategoryPosts] = useState([]);
   const [categoryError, setCategoryError] = useState(null);
-
   const [showFilterPage, setShowFilterPage] = useState(false);
   const pathParts = location.pathname.split('/');
   const encodedCategory = pathParts[pathParts.length - 1];
   const initialCategoryId = categoryTitles[encodedCategory] || encodedCategory;
 
-  const { data, loading, error } = useFetch(
+  const { data, loading } = useFetch(
       'https://places-test-api.danya.tech/api/categories?populate=image'
   );
-
-
+  const pizda = useSelector(state => state.title.categoryTitled);
   const [activeCategory, setActiveCategory] = useState(initialCategoryId);
   const [localCategoryTitle, setLocalCategoryTitle] = useState(initialCategoryId);
   const categoryTitleRedux = useSelector((state) => state?.title?.categories[activeCategory]);
-
-
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
   const loopClick = () => {
     setShowFilterPage(true);
     document.body.style.overflow = 'hidden';
   };
+
   useEffect(() => {
     scrollToActiveCategory();
-  }, [activeCategory]);
+
+  }, [activeCategory,categoryId]);
+
   const handleFilterPageClose = () => {
     setShowFilterPage(false);
     document.body.style.overflow = 'auto';
+
   };
+
   const fetchPostsForCategory = async (categoryId) => {
     try {
       const response = await fetch(
@@ -106,16 +101,14 @@ const InfoPage = () => {
       );
       const categoryData = await response.json();
 
-      // Extract posts from the category data
       const posts = categoryData?.attributes?.posts?.data || [];
       setCategoryPosts(posts);
       setCategoryError(null);
     } catch (error) {
       setCategoryError('Error fetching category data');
-      setCategoryPosts([]); // Установите пустой массив постов при ошибке
+      setCategoryPosts([]);
     }
   };
-
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -124,34 +117,36 @@ const InfoPage = () => {
         dispatch(setCategoryTitle(category.id, category.attributes.title));
         titles[category.id] = category.attributes.title;
       });
+
       setCategoryTitles(titles);
       scrollToActiveCategory();
-
     }
   }, [data]);
-  const handleCategoryClick = async (categoryId) => {
+
+  const handleCategoryClick = async (categoryId, categoryTitle) => {
     if (activeCategory === categoryId) {
       return;
     }
-
+    setIsButtonClicked(true);
     setPrevCategories([...prevCategories, activeCategory]);
-
     document.querySelectorAll(`${cl.card__item}`).forEach((tab) => {
       tab.classList.remove(cl.active);
     });
-
     setActiveCategory(categoryId);
-
-    // Fetch posts for the selected category
+    setLocalCategoryTitle(categoryTitle); // Установить локальный заголовок категории
     await fetchPostsForCategory(categoryId);
+    dispatch(setCategoryTitled('')); // Очистить значение в Redux
+
   };
-
-
-
+  const clearLocalStorage = () => {
+    localStorage.removeItem('selectedCategoryId');
+    localStorage.removeItem('selectedSubcategory');
+  };
   useEffect(() => {
     window.scrollTo(0, 0);
-
   }, [location.pathname]);
+
+  // Сброс значения pizda при размонтировании компонента
 
   return (
       <>
@@ -175,7 +170,6 @@ const InfoPage = () => {
           </header>
 
           <section className={`${cl.page__food} ${cl.food}`}>
-
             <div className={`${cl.wrapper} ${cl._container}`}>
               {loading ? (
                   <div className={cl.loaderContainer}>
@@ -188,12 +182,11 @@ const InfoPage = () => {
                             <Link
                                 to={`/page2/${cat.id}`}
                                 key={cat.id}
-                                className={`${cl.tab} ${
-                                    location.pathname.includes(`/page2/${cat.id}`) ? cl.active : ''
-                                }`}
+                                className={`${cl.tab} ${location.pathname.includes(`/page2/${cat.id}`) ? cl.active : ''}`}
                                 onClick={() => handleCategoryClick(cat.id, cat.attributes.title)}
                                 data-category={cat.id}
                             >
+
                               <img
                                   className={cl.button__image}
                                   src={`https://places-test-api.danya.tech${cat.attributes.image.data.attributes.url}`}
@@ -208,17 +201,15 @@ const InfoPage = () => {
 
             <div className={`${cl.food__header} ${cl._container}`}>
               <div className={cl.food__content}>
-                <div className={cl.food__title}>{categoryTitleRedux}</div>
-                <div className={cl.food__desc}>
-                  Нажмите на кнопку «фильтры», чтобы выбрать наиболее подходящее место
-                </div>
+                <div  className={cl.food__title}>{pizda || categoryTitleRedux }</div>
+                <div className={cl.food__desc}>Нажмите на кнопку «фильтры», чтобы выбрать наиболее подходящее место</div>
               </div>
               <div className={cl.food__icon}>
-                <img className={cl.img} onClick={loopClick} src={tool} alt=""/>
+                <img onClick={loopClick} src={tool} alt="" />
               </div>
             </div>
             {(categoryTitleRedux || localCategoryTitle) && (
-                <SortedPosts categoryId={activeCategory} categoryTitle={categoryTitleRedux} posts={categoryPosts} />
+                <SortedPosts fId={categoryId} categoryId={activeCategory} categoryTitle={localCategoryTitle} posts={categoryPosts} />
             )}
           </section>
 

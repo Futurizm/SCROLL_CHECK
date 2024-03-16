@@ -1,13 +1,26 @@
 // actions.js
+export const resetCategoryTitle = () => {
+    return {
+        type: 'RESET_CATEGORY_TITLE'
+    };
+};
 
 
 export const setCategoryTitle = (categoryId, categoryTitle) => ({
     type: 'SET_CATEGORY_TITLE',
     payload: { categoryId, categoryTitle }
 });
+export const setCategoryTitled = (categoryTitle) => ({
+    type: 'SET_CATEGORY_TITLED',
+    payload: categoryTitle
+});
 export const setSelectedSubcategory = (subcategory) => ({
     type: 'SET_SELECTED_SUBCATEGORY',
     payload: subcategory,
+});
+export const setSelectedSubsubcategory = (subsubcategory) => ({
+    type: 'SET_SELECTED_SUBCATEGORY',
+    payload: subsubcategory,
 });
 export const clearSelectedSubcategory = () => ({
     type: 'CLEAR_SELECTED_SUBCATEGORY',
@@ -17,7 +30,10 @@ export const setSelectedCategory = (categoryId) => ({
     payload: categoryId,
 });
 // actions.js
-
+export const setCurrentSubcategory = (subcategoryId) => ({
+    type: 'SET_CURRENT_SUBCATEGORY',
+    payload: subcategoryId,
+});
 export const setInitialActiveCategory = (categoryId) => ({
     type: 'SET_INITIAL_ACTIVE_CATEGORY',
     payload: categoryId,
@@ -31,11 +47,13 @@ export const setActiveCategory = (categoryId) => ({
 const initialState = {
     categories: {},
     selectedCategoryId: null,
-
-    activeCategory: null,
+    categoryTitled: null,
+    activeCategory: 0,
     activeCategoryFilter: null,
     selectedSubcategory: null,
     categoryData: null,
+    currentSubcategoryId: null,
+
 };
 
 
@@ -48,6 +66,22 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 selectedCategoryId: action.payload,
+            }; case 'SET_CURRENT_SUBCATEGORY':
+            return {
+                ...state,
+                currentSubcategoryId: action.payload,
+            };
+
+        case 'RESET_CATEGORY_TITLE':
+            return {
+                ...state,
+                categoryTitle: null
+            };
+
+        case 'SET_SELECTED_SUBSUBCATEGORY':
+            return {
+                ...state,
+                subsubcategory: null
             };
         case 'CLEAR_SELECTED_SUBCATEGORY':
             return {
@@ -73,6 +107,11 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 categoryData: action.payload,
+            };
+        case 'SET_CATEGORY_TITLED':
+            return {
+                ...state,
+                categoryTitled: action.payload,
             };
         case 'SET_ACTIVE_CATEGORY_FILTER':
             return {

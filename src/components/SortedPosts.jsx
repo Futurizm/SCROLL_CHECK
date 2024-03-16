@@ -10,18 +10,26 @@ import Loader from "./UI/Loader/Loader.jsx";
 import axios from "axios";
 import { setSelectedSubcategory } from "../actions.js";
 
-const SortedPosts = ({ categoryId, categoryTitle }) => {
+const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
     const [localData, setLocalData] = useState([]);
     const dispatch = useDispatch();
     const { buttons } = useSelector(state => state.button);
     const [allData, setAllData] = useState([]);
 
+
+
     const { data, loading, error } = useFetch(
-        `https://places-test-api.danya.tech/api/categories/${categoryId}?populate=posts,posts.images,posts.category,posts.subcategory,posts.subsubcategory`
-);
+        `https://places-test-api.danya.tech/api/categories/${fId}?populate=posts,posts.images,category,posts.subcategory,posts.subsubcategory`
+    );
+
+    console.log("FID " + fId)
 
     const selectedSubcategory = useSelector(state => state.title.selectedSubcategory);
-
+    useEffect(() => {
+        if (selectedSubcategory !== null) {
+            handleSelectedSubcategoryChange(selectedSubcategory);
+        }
+    }, [selectedSubcategory]);
     useEffect(() => {
         handleSelectedSubcategoryChange(selectedSubcategory);
     }, [selectedSubcategory]);
@@ -36,20 +44,18 @@ const SortedPosts = ({ categoryId, categoryTitle }) => {
     const handleSelectedSubcategoryChange = (subcategory) => {
         console.log("Selected subcategory changed:", subcategory);
     };
-
     useEffect(() => {
-        if (!loading && !error && data && data.attributes && data.attributes.posts && data.attributes.posts.data) {
+        if (data && data.attributes && data.attributes.posts && data.attributes.posts.data) {
             console.log("SortedPosts - Data received:", data);
             setLocalData(data.attributes.posts.data || []);
         }
-    }, [data, loading, error, categoryId]);
-
+    }, [data, loading, error, categoryId, fId]);
 
     const handleButtonClick = async (buttonId, postId) => {
         try {
             const response = await axios.get(
-                `https://places-test-api.danya.tech/api/like?uid=1295257412&postId=${postId}`
-        );
+                `https://places-test-api.danya.tech/api/like?uid=${window?.Telegram?.WebApp?.initDataUnsafe?.user?.id}&postId=${postId}`
+            );
 
             if (response.data.success) {
                 const isPressed = buttons[buttonId]?.isPressed;
@@ -66,12 +72,16 @@ const SortedPosts = ({ categoryId, categoryTitle }) => {
             console.error("Error during API request:", error);
         }
     };
-// Assuming selectedSubcategory is a valid subcategory ID
+    const seks = useSelector(state=>state.title.subsubcategory)
+    console.log(seks)
     const filteredData = data?.attributes?.posts?.data
         ? data.attributes.posts.data.filter(post => {
-            // Check if the post has a subcategory and if its ID matches the selected subcategory's ID
             const postSubcategoryId = post.attributes.subcategory?.data?.id;
-            return postSubcategoryId !== null && postSubcategoryId === selectedSubcategory;
+            const postSubsubcategoryIds = Array.isArray(post.attributes.subsubcategory?.data)
+                ? post.attributes.subsubcategory.data.map(subsubcategory => subsubcategory.id)
+                : [];
+            // Проверяем, что айдишник подкатегории или один из айдишников подподкатегорий равен выбранному айдишнику
+            return postSubcategoryId === selectedSubcategory || postSubsubcategoryIds.includes(selectedSubcategory);
         })
         : [];
 
@@ -84,6 +94,7 @@ const SortedPosts = ({ categoryId, categoryTitle }) => {
             setAllData((prevData) => [...prevData, ...uniqueData]);
         }
     }, [data]);
+
 
     return (
         <div className={`${cl.food__bottom} ${cl._container}`}>
@@ -98,30 +109,28 @@ const SortedPosts = ({ categoryId, categoryTitle }) => {
                             <div>
                                 <Link to={`/page2/previewPage/${post.id}?categoryId=${categoryId}`}>
                                     <img className={cl.kaban} src={`https://places-test-api.danya.tech${post.attributes.images.data[0].attributes.url}`} alt="" />
-                                        </Link>
-                                        </div>
-                                        <button onClick={() => handleButtonClick(post.id, post.id)} className={`${cl.main_like}`}>
-                                        <img src={buttons[post.id]?.isPressed ? yellow_heart : heart} alt="" />
-                                    </button>
-                                    <div className="food__content">
-                                        <h2 className={`${cl.food__name}`}>
-                                            {post?.attributes?.subsubcategory?.data?.attributes?.title
-                                                ? post?.attributes?.subsubcategory?.data?.attributes?.title
-                                                : post?.attributes?.subcategory?.data?.attributes?.title
-                                                    ? post?.attributes?.subcategory?.data?.attributes?.title
-                                                    : post?.attributes?.category?.data?.attributes?.title
-                                            }
-                                        </h2>
-                                        <p className={`${cl.food__position}`}>{post.attributes.title}</p>
-                                    </div>
+                                </Link>
                             </div>
-                            ))}
+                            <button onClick={() => handleButtonClick(post.id, post.id)} className={`${cl.main_like}`}>
+                                <img src={buttons[post.id]?.isPressed ? yellow_heart : heart} alt="" />
+                            </button>
+                            <div className="food__content">
+                                <h2 className={`${cl.food__name}`}>
+                                    {post?.attributes?.subsubcategory?.data?.attributes?.title
+                                        ? post?.attributes?.subsubcategory?.data?.attributes?.title
+                                        : post?.attributes?.subcategory?.data?.attributes?.title
+                                            ? post?.attributes?.subcategory?.data?.attributes?.title
+                                            : post?.attributes?.category?.data?.attributes?.title
+                                    }
+                                </h2>
+                                <p className={`${cl.food__position}`}>{post.attributes.title}</p>
+                            </div>
                         </div>
-                    )}
+                    ))}
                 </div>
-            );
-
-
-            };
+            )}
+        </div>
+    );
+};
 
 export default SortedPosts;

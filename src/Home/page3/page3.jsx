@@ -35,7 +35,7 @@ const Page3 = () => {
   const handleButtonClicker = async (buttonId, postId) => {
     try {
       const response = await axios.get(
-          `https://places-test-api.danya.tech/api/like?uid=1295257412&postId=${postId}`
+          `https://places-test-api.danya.tech/api/like?uid=${window?.Telegram?.WebApp?.initDataUnsafe?.user?.id}&postId=${postId}`
       );
 
       if (response.data.success) {

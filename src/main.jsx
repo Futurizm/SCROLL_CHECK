@@ -21,14 +21,7 @@ const App = () => {
           <Router>
             <Routes>
               <Route path="/" element={<Page />} />
-              <Route path="/infoPage" element={<Page2 />} />
-              <Route path="/page2/:category" exact component={<Page2 />} />
-              <Route path="/page2/1" element={<Page2 />} />
-              <Route path="/page2/2" element={<Page2 />} />
-              <Route path="/page2/3" element={<Page2 />} />
-              <Route path="/page2/4" element={<Page2 />} />
-              <Route path="/page2/5" element={<Page2 />} />
-              <Route path="/page2/6" element={<Page2 />} />
+                <Route path="/page2/:categoryId" element={<Page2 />} />
               <Route path="/previewPage" element={<Page3 />} />
               <Route path="/previewPage/:id" element={<Page3 />} />
               <Route path="previewPage/:id" element={<Page3 />} />

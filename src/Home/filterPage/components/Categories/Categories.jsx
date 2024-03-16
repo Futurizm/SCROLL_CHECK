@@ -4,7 +4,13 @@ import MySelectedButton from '../UI/MySelectedButton/MySelectedButton.jsx';
 import axios from 'axios';
 import { useFetch } from '../../../../components/hooks/useFetchB.js';
 import {useDispatch, useSelector} from "react-redux";
-import { setActiveCategory } from "../../../../actions.js";
+import {
+    resetCategoryTitle,
+    setActiveCategory,
+    setCategoryTitle,
+    setCategoryTitled,
+    setSelectedSubcategory
+} from "../../../../actions.js";
 import Places from "../Places/Places.jsx";
 import MyLine from "../UI/MyLine/MyLine.jsx";
 import MyBigButton from "../UI/MyBigButton/MyBigButton.jsx";
@@ -85,6 +91,7 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
     }, [data.data, onCategoryClick, initialCategoryId]);
 
     useEffect(() => {
+        clearLocalStorage()
         if (!activeCategory && data.data && data.data.length > 0) {
             // Если activeCategory не установлено и у нас есть данные категорий,
             // установите activeCategory в идентификатор первой категории
@@ -98,6 +105,8 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
 
     const handleCloseFilter = () => {
         setFilterClosed(true);
+        dispatch(setSelectedSubcategory(null));
+
     };
     const handleResetSelection = () => {
         setSelectedButton(null);
@@ -105,9 +114,10 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
         setSelectedSubcategory(null); // Сброс подкатегорий
         dispatch(setActiveCategory(null));
     };
-
-
-
+    const clearLocalStorage = () => {
+        localStorage.removeItem('selectedCategoryId');
+        localStorage.removeItem('selectedSubcategory');
+    };
     const handleButtonClick = (index, categoryId) => {
         dispatch(setActiveCategory(categoryId));
         setSelectedButton(null);
@@ -122,7 +132,6 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
 
         const clickedCategoryId = data?.data?.[index]?.id;
         setActiveCategoryId(clickedCategoryId);
-        clearLocalStorage();
 
         if (onCategoryClick) {
             onCategoryClick({
@@ -141,15 +150,20 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
                 (button) => button.id === initialCategoryId
             );
 
+
+
             if (defaultActiveCategoryIndex !== -1) {
                 setSelectedButton(defaultActiveCategoryIndex);
                 setActiveCategoryId(data?.data?.[defaultActiveCategoryIndex]?.id);
+
                 if (onCategoryClick) {
                     onCategoryClick({
                         category: data?.data?.[defaultActiveCategoryIndex],
                         categoryId: data?.data?.[defaultActiveCategoryIndex]?.id,
                     });
-                }S
+
+
+                }
             }
         }
 
@@ -158,19 +172,19 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
 
     useEffect(() => {
         setSelectedButton(null);
+
     }, [activeCategory]);
 
-    const clearLocalStorage = () => {
-        localStorage.removeItem('selectedCategoryId');
-        localStorage.removeItem('selectedSubcategory');
-    };
+
     useEffect(() => {
         if (activeCategory !== null) {
             setSelectedCategory(activeCategory);
         }
+
     }, [activeCategory]);
     useEffect(() => {
         setSelectedButton(null);
+
     }, [activeCategory]);
 
     const [sup,setSup] = useState(false);
@@ -184,8 +198,13 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
                 setSelectedButton(defaultActiveCategoryIndex);
                 setActiveCategoryId(data?.data?.[defaultActiveCategoryIndex]?.id);
             }
+
         }
+
     }, [data.data, activeCategory]);
+
+
+
     return (
         <div>
             <Header handleFilterPageClose={handleFilterPageClose}  resetUgu={handleResetSelection}/>
@@ -207,6 +226,9 @@ const Categories = ({ activeCategory, onCategoryClick, handleFilterPageClose }) 
                             key={index}
                             isRed={(selectedButton === index) || (activeCategory === index && index === 0)}
                             onClick={() => {
+                                dispatch(setCategoryTitled(button.attributes?.title))
+
+
                                 handleButtonClick(index);
                             }}
                             ref={index === 0 ? buttonRef : null}
