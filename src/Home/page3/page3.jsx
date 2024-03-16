@@ -20,6 +20,7 @@ const Page3 = () => {
       `https://places-test-api.danya.tech/api/categories/${categoryId}?populate=posts,posts.images,posts.category,posts.subcategory,posts.subsubcategory`
   );
 
+
   console.log(data)
 
   const [currentSlide, setCurrentSlide] = useState(() => {

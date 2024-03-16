@@ -9,6 +9,7 @@ import cl from './../Home/page2/page2.module.css';
 import Loader from "./UI/Loader/Loader.jsx";
 import axios from "axios";
 import { setSelectedSubcategory } from "../actions.js";
+import Page3 from "../Home/page3/page3.jsx";
 
 const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
     const [localData, setLocalData] = useState([]);
@@ -107,7 +108,7 @@ const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
                     {(filteredData.length > 0 ? filteredData : localData).map((post) => (
                         <div className={`${cl.food__column}`} key={post.id}>
                             <div>
-                                <Link to={`/page2/previewPage/${post.id}?categoryId=${categoryId}`}>
+                                <Link to={`/page2/previewPage/${post.id}?categoryId=${fId}`}>
                                     <img className={cl.kaban} src={`https://places-test-api.danya.tech${post.attributes.images.data[0].attributes.url}`} alt="" />
                                 </Link>
                             </div>
@@ -130,6 +131,7 @@ const SortedPosts = ({ fId, categoryId, categoryTitle }) => {
                 </div>
             )}
         </div>
+
     );
 };
 
